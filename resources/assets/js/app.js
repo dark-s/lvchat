@@ -41,5 +41,13 @@ const app = new Vue({
         axios.get('/messages').then(response => {
             this.messages =  response.data;
         });
+
+        Echo.join('chatroom').listen('MessagePosted', (e) => {
+                this.messages.push({
+                    message: e.message.message,
+                    user: e.message.user.name
+                });
+                console.log(e);
+            });
     }
 });

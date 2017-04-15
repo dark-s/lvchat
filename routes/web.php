@@ -1,5 +1,7 @@
 <?php
 
+use \App\Events\MessagePosted;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,7 +32,7 @@ Route::post('/messages', function () {
         'message' => request()->get('message')
     ]);
 
-    event(new \App\Events\MessagePosted($message, $user));
+    event(new MessagePosted($message, $user));
 
     return ['status' => 'success'];
 })->middleware('auth');
