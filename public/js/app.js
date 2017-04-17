@@ -1312,10 +1312,8 @@ Vue.component('chat-composer', __webpack_require__(45));
 var app = new Vue({
     el: '#app',
     data: {
-        messages: [{
-            message: '',
-            user: ''
-        }]
+        messages: [],
+        usersInRoom: []
     },
     methods: {
         addMessage: function addMessage(message) {
@@ -1333,12 +1331,19 @@ var app = new Vue({
             _this.messages = response.data;
         });
 
-        Echo.join('chatroom').listen('MessagePosted', function (e) {
+        Echo.join('chatroom').here(function (users) {
+            _this.usersInRoom = users;
+        }).joining(function (user) {
+            _this.usersInRoom.push(user);
+        }).leaving(function (user) {
+            _this.usersInRoom = _this.usersInRoom.filter(function (u) {
+                return u != user;
+            });
+        }).listen('MessagePosted', function (e) {
             _this.messages.push({
                 message: e.message.message,
-                user: e.message.user.name
+                user: e.user
             });
-            console.log(e);
         });
     }
 });
@@ -2343,8 +2348,9 @@ window.Pusher = __webpack_require__(44);
 
 window.Echo = new __WEBPACK_IMPORTED_MODULE_0_laravel_echo___default.a({
   broadcaster: 'pusher',
-  key: 'fe33900d678d33776934',
-  cluster: 'eu'
+  key: '4d20814b02dc70740e0d',
+  cluster: 'eu',
+  encrypted: true
 });
 
 /***/ }),
@@ -37174,6 +37180,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "messageText"
     }],
     attrs: {
+      "id": "message",
       "type": "text",
       "placeholder": "Start typing your message"
     },
